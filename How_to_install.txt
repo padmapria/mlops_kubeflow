@@ -1,0 +1,33 @@
+How to install kubeflow (pipeline) locally on windows 
+https://www.youtube.com/watch?v=LSvvIt2m1Jo
+Thanks to Ashutosh Tripati
+
+1)Download docker desktop and start docker desktop
+
+2)Install minikube https://minikube.sigs.k8s.io/docs/start/ 
+Note: Follow the both the instructions in the above link, Run as administrator from powershell, 
+After this step we can see a folder in C: drive 'C:\minikube'
+
+3) To start minikube from powershell run the below command (ensure docker desktop running) 
+minikube start 
+Note: The above step will download containers in the docker desktop, it will take around 5 mins
+
+4) Check if the minikue is started by running the below command from cmd prompt
+kubectl get po -A
+
+5) To deploy the Kubeflow Pipelines on local cluster environment, run the following commands, refer the link below: 
+https://www.kubeflow.org/docs/components/pipelines/v1/installation/localcluster-deployment/#deploying-kubeflow-pipelines
+
+# env/platform-agnostic-pns hasn't been publically released, so you will install it from master
+export PIPELINE_VERSION=2.0.1
+kubectl apply -k "github.com/kubeflow/pipelines/manifests/kustomize/cluster-scoped-resources?ref=$PIPELINE_VERSION"
+kubectl wait --for condition=established --timeout=60s crd/applications.app.k8s.io
+kubectl apply -k "github.com/kubeflow/pipelines/manifests/kustomize/env/platform-agnostic-pns?ref=$PIPELINE_VERSION"
+
+Note: The above step will take 15 to 20 mins
+
+
+6) Verify that the Kubeflow Pipelines UI is accessible by port-forwarding:
+kubectl port-forward -n kubeflow svc/ml-pipeline-ui 8080:80
+
+7)Test if its up from localhost:8080
